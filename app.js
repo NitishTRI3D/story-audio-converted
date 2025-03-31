@@ -11,13 +11,41 @@ const convertButton = document.getElementById('convertButton');
 const audioSection = document.getElementById('audio-section');
 const audioPlayer = document.getElementById('audio-player');
 const downloadButton = document.getElementById('downloadButton');
+const voiceSelect = document.getElementById('voiceSelect');
 
 // Event Listeners
 fileInput.addEventListener('change', handleFileSelect);
 convertButton.addEventListener('click', convertToAudio);
 downloadButton.addEventListener('click', downloadAudio);
 
+// Load available voices when the page loads
+window.speechSynthesis?.addEventListener('voiceschanged', loadVoices);
+
+// If voices are already available, load them
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.speechSynthesis) {
+        loadVoices();
+    }
+});
+
 let extractedText = '';
+
+// Function to load available voices
+function loadVoices() {
+    // Clear existing options
+    voiceSelect.innerHTML = '';
+    
+    // Get available voices
+    const voices = window.speechSynthesis.getVoices();
+    
+    // Add voices to select dropdown
+    voices.forEach((voice, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.textContent = `${voice.name} (${voice.lang})`;
+        voiceSelect.appendChild(option);
+    });
+}
 
 // Handle file selection
 function handleFileSelect(event) {
@@ -108,22 +136,87 @@ function displayContent(text) {
     contentSection.style.display = 'block';
 }
 
-// Convert text to audio (placeholder for now)
+// Convert text to audio using browser's SpeechSynthesis API
 function convertToAudio() {
     if (!extractedText) {
         errorContainer.textContent = 'No text content to convert.';
         return;
     }
     
-    // In a future phase, we will integrate with TTS APIs
-    // For now, just display a message about future functionality
-    alert('Text-to-speech conversion will be implemented in the next phase.');
+    // Check if browser supports speech synthesis
+    if (!window.speechSynthesis) {
+        errorContainer.textContent = 'Your browser does not support speech synthesis.';
+        return;
+    }
     
-    // Placeholder for future implementation
-    // audioSection.style.display = 'block';
+    // Create a new utterance
+    const utterance = new SpeechSynthesisUtterance(extractedText);
+    
+    // Get available voices and set selected voice
+    const voices = speechSynthesis.getVoices();
+    const selectedVoiceIndex = voiceSelect.value;
+    
+    if (selectedVoiceIndex && voices.length > 0) {
+        utterance.voice = voices[selectedVoiceIndex];
+    }
+    
+    // Create a blob URL for the audio player (for future implementation)
+    // For now, we'll just play the audio directly
+    
+    // Show the audio section
+    audioSection.style.display = 'block';
+    
+    // Display a loading message
+    const originalButtonText = convertButton.textContent;
+    convertButton.textContent = 'Converting...';
+    convertButton.disabled = true;
+    
+    // Start speaking
+    speechSynthesis.speak(utterance);
+    
+    // When synthesis ends
+    utterance.onend = function() {
+        convertButton.textContent = originalButtonText;
+        convertButton.disabled = false;
+    };
+    
+    // Listen for errors
+    utterance.onerror = function(event) {
+        errorContainer.textContent = 'Error occurred during speech synthesis: ' + event.error;
+        convertButton.textContent = originalButtonText;
+        convertButton.disabled = false;
+    };
 }
 
-// Download audio file (placeholder for now)
+// Variable to store audio blob
+let audioBlob = null;
+
+// Download audio file
 function downloadAudio() {
-    alert('Download functionality will be available in the next phase.');
+    if (!extractedText) {
+        errorContainer.textContent = 'No text content to convert to audio.';
+        return;
+    }
+    
+    // For now, we'll create a simple text file with the content
+    // In a future update, we can implement actual audio recording/saving
+    
+    // Create a blob from the text content
+    const textBlob = new Blob([extractedText], { type: 'text/plain' });
+    
+    // Create a URL for the blob
+    const url = URL.createObjectURL(textBlob);
+    
+    // Create a temporary link element
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'storybook_text.txt'; // Default filename
+    
+    // Append to body, click, and remove
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Release the URL object
+    URL.revokeObjectURL(url);
 }

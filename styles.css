@@ -76,6 +76,18 @@ input[type="file"] {
     line-height: 1.6;
 }
 
+.voice-controls {
+    margin-bottom: 20px;
+}
+
+.voice-select {
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    margin: 0 10px;
+    width: 200px;
+}
+
 .convert-button, .download-button {
     background-color: #2ecc71;
     color: white;
