@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storybook to Audio Converter</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Storybook to Audio Converter</h1>
+        
+        <div class="upload-section">
+            <h2>Upload Your Storybook</h2>
+            <p>Select a PDF or TXT file to convert to audio</p>
+            
+            <div class="file-upload">
+                <input type="file" id="fileInput" accept=".pdf,.txt" />
+                <label for="fileInput" class="upload-button">Choose File</label>
+                <span id="file-name">No file selected</span>
+            </div>
+            
+            <div class="error-message" id="error-container"></div>
+        </div>
+        
+        <div class="content-section" id="content-section" style="display: none;">
+            <h2>Storybook Content</h2>
+            <div class="text-content" id="text-content"></div>
+            
+            <button id="convertButton" class="convert-button">Convert to Audio</button>
+        </div>
+        
+        <div class="audio-section" id="audio-section" style="display: none;">
+            <h2>Audio Version</h2>
+            <audio id="audio-player" controls></audio>
+            <button id="downloadButton" class="download-button">Download Audio</button>
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.12.313/pdf.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
